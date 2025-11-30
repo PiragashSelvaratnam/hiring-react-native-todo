@@ -27,7 +27,10 @@ export default function TodoInput({
       ],
       opacity: withTiming(isFocused.value ? 1 : 0.7, { duration: 200 }),
       borderWidth: withTiming(isFocused.value ? 1 : 0, { duration: 200 }),
-      borderColor: withTiming(isFocused.value ? TodoColors.primary : TodoColors.background, { duration: 200 }),
+      borderColor: withTiming(
+        isFocused.value ? TodoColors.primary : TodoColors.background,
+        { duration: 200 }
+      ),
       borderRadius: withTiming(isFocused.value ? 8 : 0, { duration: 200 }),
       padding: withTiming(isFocused.value ? 8 : 0, { duration: 200 }),
     };

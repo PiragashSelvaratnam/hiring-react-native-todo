@@ -1,7 +1,6 @@
 import {
   StyleProp,
   StyleSheet,
-  Text,
   TouchableOpacity,
   TouchableOpacityProps,
   ViewStyle,

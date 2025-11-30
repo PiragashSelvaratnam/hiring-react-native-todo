@@ -33,7 +33,7 @@ export default function Index() {
     fabRotation.value = withTiming(isAddingTodo ? 1 : 0, {
       duration: 300,
     });
-    fabPosition.value = withTiming(isAddingTodo ? 16 : bottom + 24, {
+    fabPosition.value = withTiming(isAddingTodo ? 24 : bottom + 24, {
       duration: 300,
     });
   }, [isAddingTodo, bottom]);
@@ -66,6 +66,10 @@ export default function Index() {
 
   const handleEditTodo = (id: string) => {
     const todoToEdit = todos.find((todo) => todo.id === id);
+    if (todoToEdit?.completed) {
+      alert("You cannot edit a completed task");
+      return;
+    }
     if (todoToEdit) {
       setNewTodoText(todoToEdit.text);
       setEditingTodoId(id);
@@ -80,10 +84,10 @@ export default function Index() {
       } else {
         addTodo(newTodoText);
       }
-      setIsAddingTodo(false);
-      setNewTodoText("");
-      setEditingTodoId(null);
     }
+    setIsAddingTodo(false);
+    setNewTodoText("");
+    setEditingTodoId(null);
   };
 
   return (
