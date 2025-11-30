@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import React from "react";
 import Animated, { AnimatedStyle } from "react-native-reanimated";
+import { TodoColors } from "@/constants/Colors";
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
@@ -38,7 +39,7 @@ export default function ButtonWithIcon({
 const styles = StyleSheet.create({
   fabIcon: {
     fontSize: 32,
-    color: "#FFFFFF",
+    color: TodoColors.icon,
     fontWeight: "300",
   },
 });

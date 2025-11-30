@@ -1,5 +1,14 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { useEffect } from "react";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  interpolate,
+  interpolateColor,
+} from "react-native-reanimated";
 import type { Todo } from "./todo-list";
+import { TodoColors } from "@/constants/Colors";
 
 type TodoItemProps = {
   item: Todo;
@@ -12,28 +21,76 @@ export default function TodoItem({
   onToggleTodo,
   onEditTodo,
 }: TodoItemProps) {
+  const progress = useSharedValue(item.completed ? 1 : 0);
+
+  useEffect(() => {
+    progress.value = withSpring(item.completed ? 1 : 0, {
+      damping: 15,
+      stiffness: 150,
+      mass: 0.5,
+    });
+  }, [item.completed]);
+
+  const checkboxAnimatedStyle = useAnimatedStyle(() => {
+    const backgroundColor = interpolateColor(
+      progress.value,
+      [0, 1],
+      ["#1A1A1A", "#51ACB4"]
+    );
+
+    return {
+      backgroundColor,
+    };
+  });
+
+  const checkmarkAnimatedStyle = useAnimatedStyle(() => {
+    const scale = interpolate(progress.value, [0, 0.5, 1], [0, 1.2, 1]);
+    const opacity = interpolate(progress.value, [0, 0.3, 1], [0, 1, 1]);
+
+    return {
+      opacity,
+      transform: [{ scale }],
+    };
+  });
+
+  const textAnimatedStyle = useAnimatedStyle(() => {
+    const color = interpolateColor(
+      progress.value,
+      [0, 1],
+      ["#000000", "#8A8A8A"]
+    );
+
+    return {
+      color,
+    };
+  });
+
   return (
     <View style={styles.todoItem}>
       <TouchableOpacity
         onPress={() => onToggleTodo(item.id)}
         activeOpacity={0.7}
       >
-        <View
-          style={[styles.checkbox, item.completed && styles.checkboxCompleted]}
-        >
-          {item.completed && <Text style={styles.checkmark}>✓</Text>}
-        </View>
+        <Animated.View style={[styles.checkbox, checkboxAnimatedStyle]}>
+          <Animated.Text style={[styles.checkmark, checkmarkAnimatedStyle]}>
+            ✓
+          </Animated.Text>
+        </Animated.View>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => onEditTodo(item.id)}
         activeOpacity={0.7}
         style={styles.todoTextContainer}
       >
-        <Text
-          style={[styles.todoText, item.completed && styles.todoTextCompleted]}
+        <Animated.Text
+          style={[
+            styles.todoText,
+            textAnimatedStyle,
+            item.completed && styles.todoTextCompleted,
+          ]}
         >
           {item.text}
-        </Text>
+        </Animated.Text>
       </TouchableOpacity>
     </View>
   );
@@ -45,7 +102,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 16,
     paddingVertical: 4,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: TodoColors.background,
   },
   todoTextContainer: {
     flex: 1,
@@ -54,25 +111,21 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 6,
-    backgroundColor: "#1A1A1A",
     justifyContent: "center",
     alignItems: "center",
   },
-  checkboxCompleted: {
-    backgroundColor: "#51ACB4",
-  },
   checkmark: {
-    color: "#FFFFFF",
+    color: TodoColors.icon,
     fontSize: 16,
     fontWeight: "bold",
   },
   todoText: {
     fontSize: 18,
-    color: "#000000",
+    color: TodoColors.text,
     fontFamily: "Manrope_500Medium",
   },
   todoTextCompleted: {
     textDecorationLine: "line-through",
-    color: "#8A8A8A",
+    color: TodoColors.textCompleted,
   },
 });

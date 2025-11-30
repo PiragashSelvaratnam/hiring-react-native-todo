@@ -3,6 +3,12 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import ButtonWithIcon from "./button-with-icon";
 import TodoItem from "./todo-item";
+import Animated, {
+  LinearTransition,
+  FadeInDown,
+  FadeOutUp,
+} from "react-native-reanimated";
+import { TodoColors } from "@/constants/Colors";
 
 export type Todo = {
   id: string;
@@ -36,27 +42,34 @@ export default function TodoList({
   };
 
   const renderTodoItem = ({ item }: { item: Todo }) => (
-    <ReanimatedSwipeable
-      renderRightActions={() => renderRightActions(item.id)}
-      friction={2}
-      enableTrackpadTwoFingerGesture
-      rightThreshold={40}
+    <Animated.View
+      entering={FadeInDown.duration(300).springify()}
+      exiting={FadeOutUp.duration(300)}
+      layout={LinearTransition}
     >
-      <TodoItem
-        item={item}
-        onToggleTodo={onToggleTodo}
-        onEditTodo={onEditTodo}
-      />
-    </ReanimatedSwipeable>
+      <ReanimatedSwipeable
+        renderRightActions={() => renderRightActions(item.id)}
+        friction={2}
+        enableTrackpadTwoFingerGesture
+        rightThreshold={40}
+      >
+        <TodoItem
+          item={item}
+          onToggleTodo={onToggleTodo}
+          onEditTodo={onEditTodo}
+        />
+      </ReanimatedSwipeable>
+    </Animated.View>
   );
 
   return (
-    <FlatList
+    <Animated.FlatList
       data={todos}
       renderItem={renderTodoItem}
       keyExtractor={(item) => item.id}
       style={styles.todoList}
       contentContainerStyle={styles.todoListContent}
+      itemLayoutAnimation={LinearTransition}
     />
   );
 }
@@ -80,10 +93,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 6,
   },
-  editAction: {
-    backgroundColor: "#51ACB4",
-  },
   deleteAction: {
-    backgroundColor: "#E74C3C",
+    backgroundColor: TodoColors.deleteAction,
   },
 });

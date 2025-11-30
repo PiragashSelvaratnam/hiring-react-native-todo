@@ -4,16 +4,19 @@ import TodoList from "@/components/todo-list";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useEffect } from "react";
 import { useState } from "react";
-import { StyleSheet, Text, View, Platform } from "react-native";
+import { StyleSheet, View, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
-import {
+import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   interpolate,
+  FadeInDown,
+  LinearTransition,
 } from "react-native-reanimated";
 import { usePersistedTodos } from "@/hooks/use-persisted-todos";
+import { TodoColors } from "@/constants/Colors";
 
 export default function Index() {
   const { top, bottom } = useSafeAreaInsets();
@@ -30,11 +33,9 @@ export default function Index() {
     fabRotation.value = withTiming(isAddingTodo ? 1 : 0, {
       duration: 300,
     });
-    console.log("fabRotation", fabPosition.value);
-    fabPosition.value = withTiming(isAddingTodo ? 10 : bottom + 24, {
+    fabPosition.value = withTiming(isAddingTodo ? 16 : bottom + 24, {
       duration: 300,
     });
-    console.log("fabPosition", fabPosition.value);
   }, [isAddingTodo, bottom]);
 
   const fabIconStyle = useAnimatedStyle(() => {
@@ -92,14 +93,24 @@ export default function Index() {
     >
       <View style={styles.container}>
         <View style={[styles.content, { paddingTop: top + 20 }]}>
-          <Text style={styles.title}>tasked</Text>
+          <Animated.Text
+            entering={FadeInDown.duration(500).delay(200)}
+            style={styles.title}
+          >
+            tasked
+          </Animated.Text>
 
           {isAddingTodo && (
-            <TodoInput
-              value={newTodoText}
-              onChangeText={setNewTodoText}
-              onSubmit={submitTodo}
-            />
+            <Animated.View
+              entering={FadeInDown.duration(300)}
+              layout={LinearTransition}
+            >
+              <TodoInput
+                value={newTodoText}
+                onChangeText={setNewTodoText}
+                onSubmit={submitTodo}
+              />
+            </Animated.View>
           )}
 
           <TodoList
@@ -124,7 +135,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   keyboardAvoidingView: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: TodoColors.background,
   },
   container: {
     flex: 1,
@@ -137,7 +148,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     fontFamily: "Manrope_500Medium",
     marginBottom: 32,
-    color: "#000000",
+    color: TodoColors.secondary,
     paddingHorizontal: 24,
   },
   fab: {
@@ -146,7 +157,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: "#51ACB4",
+    backgroundColor: TodoColors.primary,
     justifyContent: "center",
     alignItems: "center",
   },
